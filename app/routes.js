@@ -1,5 +1,6 @@
 let isLoggedIn = require('./middlewares/isLoggedIn')
 let timeline = require('./routes/timeline')
+let compose = require('./routes/compose')
 let _ = require('lodash')
 let then = require('express-then')
 let Twitter  = require('twitter')
@@ -126,35 +127,7 @@ module.exports = (app) => {
     res.render('compose.ejs')
   })
 
-  app.post('/compose', isLoggedIn, then(async (req,res) => {    
-    let status = req.body.reply
-    let networkType = req.body.networkType;
-    
-    if(!networkType) {
-      return req.flash('error', 'Invalid network type')
-    }
-
-    if(!status) {
-      return req.flash('error', 'Status cannot be empty')
-    }
-
-    if(status.length > 140) {
-      return req.flash('error', 'Status is over 140 characters')
-    }
-
-    if(networkType === 'twitter'){
-      let twitterClient = new Twitter({
-        consumer_key: twitterConfig.consumerKey,
-        consumer_secret: twitterConfig.consumerSecret,
-        access_token_key: req.user.twitter.token,
-        access_token_secret: req.user.twitter.secret
-      })
-      
-
-      await twitterClient.promise.post('statuses/update.json', {status})      
-    }
-    res.redirect('/timeline')
-  }))
+  app.post('/compose', isLoggedIn, then(compose(app)))
 
 
   app.get('/reply/:id', isLoggedIn, then(async(req, res) => {
@@ -254,7 +227,7 @@ module.exports = (app) => {
 
   // Facebook routes
   // Authentication route & Callback URL
-  app.get('/auth/facebook', passport.authenticate('facebook', {scope: ['read_stream']}))
+  app.get('/auth/facebook', passport.authenticate('facebook', {scope: ['email', 'user_posts', 'read_stream', 'public_profile','user_likes', 'publish_actions']}))
   app.get('/auth/facebook/callback', passport.authenticate('facebook', {
       successRedirect: '/profile',
       failureRedirect: '/login',
@@ -262,7 +235,7 @@ module.exports = (app) => {
   }))
 
   // Authorization route & Callback URL
-  app.get('/connect/facebook', passport.authorize('facebook', {scope: ['read_stream']}))
+  app.get('/connect/facebook', passport.authorize('facebook', {scope: ['email', 'user_posts', 'read_stream', 'public_profile','user_likes', 'publish_actions']}))
   app.get('/connect/facebook/callback', passport.authorize('facebook', {
       successRedirect: '/profile',
       failureRedirect: '/login',

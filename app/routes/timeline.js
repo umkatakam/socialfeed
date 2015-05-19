@@ -1,4 +1,3 @@
-let Promise = require('promise')
 let Twitter  = require('twitter')
 let _ = require('lodash')
 let requestPromise = require('request-promise')
