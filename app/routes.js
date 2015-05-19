@@ -1,10 +1,11 @@
 let isLoggedIn = require('./middlewares/isLoggedIn')
+let timeline = require('./routes/timeline')
 let _ = require('lodash')
 let then = require('express-then')
 let Twitter  = require('twitter')
 let FB = require('fb');
 let rp = require('request-promise')
-let Promise = require('promise');
+let Promise = require('promise')
 let scope = 'email'
 let fs = require('fs')
 
@@ -22,8 +23,6 @@ let networks = {
       class: 'btn-primary'
   }
 }
-
-// let posts = require('../data/posts')
 
 module.exports = (app) => {
     let passport = app.passport
@@ -70,66 +69,7 @@ module.exports = (app) => {
 
   //Timeline routes
 
-  app.get('/timeline', isLoggedIn, then(async (req,res) => {
-    // get tweets from twitter
-    let twitterClient = new Twitter({
-      consumer_key: twitterConfig.consumerKey,
-      consumer_secret: twitterConfig.consumerSecret,
-      access_token_key: req.user.twitter.token,
-      access_token_secret: req.user.twitter.secret
-    })
-    
-   let [tweets] = await twitterClient.promise.get('statuses/home_timeline') 
-   let twitterPosts = _.map(tweets, function(tweet){
-    return {
-      id: tweet.id_str,
-      image: tweet.user.profile_image_url,
-      text: tweet.text,
-      name: tweet.user.name,
-      username: "@" + tweet.user.screen_name,
-      liked: tweet.favorited,
-      retweeted: tweet.retweeted,
-      retweedStatusId: tweet.retweeted && tweet.retweeted_status ? tweet.retweeted_status.id_str : null,
-      network: networks.twitter
-    }
-   })
-
-    let atoken = req.user.facebook.token;
-
-    let response = await rp({
-        uri: `https://graph.facebook.com/me/home/?access_token=${atoken}&limit=10`,
-        resolveWithFullResponse: true
-    })
-      
-    let fbFeeds;
-    if(response && response.body){
-      let fbPosts = JSON.parse(response.body);
-      let fbData = fbPosts.data;
-      fbFeeds = _.map(fbData, function(post){
-        let liked = post.likes && post.likes.data && post.likes.data.length > 0;
-        let likedCount = 0;
-        if(liked) {
-          likedCount = post.likes.data.length
-        }
-        return {
-            id: post.id,
-            image: post.picture,
-            text: post.description,
-            name: post.from.name,
-            username: post.name,
-            liked: liked,
-            likedCount: likedCount,            
-            network: networks.facebook
-        }
-      });
-    }
-    
-  
-    res.render('timeline.ejs',{
-      twitterPosts: twitterPosts || [],
-      fbFeeds: fbFeeds || []
-    })
-  }));
+  app.get('/timeline', isLoggedIn, then(timeline(app)));
 
 
   //Sharing routes
@@ -278,7 +218,6 @@ module.exports = (app) => {
     })
 
     let id = req.params.id
-    console.log(req.body.share);
     await twitterClient.promise.post('favorites/create', {id})
     res.end()
   }))
@@ -305,7 +244,6 @@ module.exports = (app) => {
     })
 
     let id = req.params.id
-    console.log(id);
     try{
       await twitterClient.promise.post('statuses/destroy', {id})      
     }catch(e){
@@ -364,3 +302,4 @@ module.exports = (app) => {
       failureFlash: true
   }))
 }
+
