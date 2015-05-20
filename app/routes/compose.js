@@ -9,7 +9,7 @@ module.exports = (app) => {
 
 	return async (req, res) => {
 		let status = req.body.reply
-    let networkType = req.body.networkType;
+    let networkType = req.body.networkType
     
     if (!networkType) {
       return req.flash('error', 'Invalid network type')

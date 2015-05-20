@@ -75,8 +75,8 @@
                             </div>
                             <div class="row">
                                <div class="col-xs-8 col-md-10 _icons">
-                                   <i class="fa <%= tweet.liked ? "fa-thumbs-up" : "fa-thumbs-o-up" %> fa-2x _like" name="like<%= tweet.id %>"></i> 
-                                    <a href="/reply/<%= tweet.id %>" class="fa fa-reply fa-2x"></a>
+                                   <i class="fa <%= tweet.liked ? "fa-thumbs-up" : "fa-thumbs-o-up" %> fa-2x _like" data-network-type="twitter" name="like<%= tweet.id %>"></i> 
+                                    <a href="/reply/<%= tweet.id %>?networkType=twitter" class="fa fa-reply fa-2x"></a>
                                     <%if (tweet.retweeted) {%>
                                         <i data-id="<%= tweet.retweedStatusId %>" class="fa fa-2x fa-share-square _unshare"></i>
                                     <%} else {%>
@@ -110,9 +110,9 @@
                             </div>
                             <div class="row">
                                <div class="col-xs-8 col-md-10 _icons">
-                                   <i class="fa <%= fbFeed.liked ? "fa-thumbs-up" : "fa-thumbs-o-up" %> fa-2x _like" name="like<%= fbFeed.id %>"></i>
+                                   <i class="fa <%= fbFeed.liked ? "fa-thumbs-up" : "fa-thumbs-o-up" %> fa-2x _like" data-network-type="facebook" name="like<%= fbFeed.id %>"></i>
                                    (<%= fbFeed.likedCount %>) 
-                                    <a href="/reply/<%= fbFeed.id %>" class="fa fa-reply fa-2x"></a>
+                                    <a href="/reply/<%= fbFeed.id %>?networkType=facebook" class="fa fa-reply fa-2x"></a>
                                     <i data-id="<%= fbFeed.retweedStatusId %>" class="fa fa-2x fa-share-square _unshare"></i>                                    
                                </div> 
                                <div class="col-xs-4 col-md-2">
@@ -136,10 +136,11 @@
             var id = $this.attr('name').replace('like', '')
             $this.toggleClass('fa-thumbs-o-up')
             $this.toggleClass('fa-thumbs-up')
+            var networkType = $this.data('networkType')
             if ($this.hasClass('fa-thumbs-up')) {
-                $.post('like/' + id)
+                $.post('like/' + id + '?networkType=' + networkType)
             } else {
-                $.post('unlike/' + id)
+                $.post('unlike/' + id + '?networkType=' + networkType)
             }
         })
 

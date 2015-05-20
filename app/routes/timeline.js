@@ -29,7 +29,17 @@ module.exports = (app) => {
 		  access_token_secret: req.user.twitter.secret
 		})
 
-		let [tweets] = await twitterClient.promise.get('statuses/home_timeline') 
+		// let [tweets] = await twitterClient.promise.get('statuses/home_timeline') 
+
+		let atoken = req.user.facebook.token;
+		let [[tweets], response] = await Promise.all([
+			twitterClient.promise.get('statuses/home_timeline'),
+			requestPromise({
+			    uri: `https://graph.facebook.com/me/home/?access_token=${atoken}&limit=10`,
+			    resolveWithFullResponse: true
+			})
+		 ])
+
 		let twitterPosts = _.map(tweets, function(tweet) {
 		return {
 		  id: tweet.id_str,
@@ -44,12 +54,11 @@ module.exports = (app) => {
 		}
 		})
 
-		let atoken = req.user.facebook.token;
 
-		let response = await requestPromise({
-		    uri: `https://graph.facebook.com/me/home/?access_token=${atoken}&limit=10`,
-		    resolveWithFullResponse: true
-		})
+		// let response = await requestPromise({
+		//     uri: `https://graph.facebook.com/me/home/?access_token=${atoken}&limit=10`,
+		//     resolveWithFullResponse: true
+		// })
 		  
 		let fbFeeds;
 		if(response && response.body){
