@@ -1,1 +1,1 @@
-# node-social-feed-app
+# socialfeed
