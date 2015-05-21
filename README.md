@@ -21,4 +21,20 @@ Time spent: `20`
 
 ### Walkthrough
 
+#### Login
+![alt tag](https://github.com/umkatakam/socialfeed/blob/master/images/login.gif)
+
+#### Timeline
+![alt tag](https://github.com/umkatakam/socialfeed/blob/master/images/timeline.gif)
+
+#### Twitter
+![alt tag](https://github.com/umkatakam/socialfeed/blob/master/images/twitter.gif)
+
+#### Facebook
+![alt tag](https://github.com/umkatakam/socialfeed/blob/master/images/fb.gif)
+![alt tag](https://github.com/umkatakam/socialfeed/blob/master/images/fb-ouput.gif)
+
+
+
+
 
