@@ -4,6 +4,7 @@ let compose = require('./routes/compose')
 let like = require('./routes/like')
 let reply = require('./routes/reply')
 let getReply = require('./routes/get-reply')
+let share = require('./routes/share')
 let _ = require('lodash')
 let then = require('express-then')
 let Twitter  = require('twitter')
@@ -76,55 +77,9 @@ module.exports = (app) => {
   app.get('/timeline', isLoggedIn, then(timeline(app)));
 
 
-  //Sharing routes
-  app.post('/share/:id', isLoggedIn, then(async (req,res) => {    
-    let twitterClient = new Twitter({
-      consumer_key: twitterConfig.consumerKey,
-      consumer_secret: twitterConfig.consumerSecret,
-      access_token_key: req.user.twitter.token,
-      access_token_secret: req.user.twitter.secret
-    })
-    let id = req.params.id
-    let text = req.body.text;
-    if (text.length > 140) {
-            return req.flash('error', 'Status is over 140 characters')
-    }
-    if (!text.length) {
-        return req.flash('error', 'Status cannot be empty')
-    }
-            
+  app.post('/share/:id', isLoggedIn, then(share(app)))
 
-    await twitterClient.promise.post('statuses/retweet/' + id, {text})
-        
-    res.redirect('/timeline')
-  }))
-
-  app.get('/share/:id', isLoggedIn, then(async(req, res) => {
-      let twitterClient = new Twitter({
-          consumer_key: twitterConfig.consumerKey,
-          consumer_secret: twitterConfig.consumerSecret,
-          access_token_key: req.user.twitter.token,
-          access_token_secret: req.user.twitter.secret
-      })
-
-      let id = req.params.id
-
-      let [tweet] = await twitterClient.promise.get('/statuses/show/' + id)
-
-      tweet = {
-          id: tweet.id_str,
-          image: tweet.user.profile_image_url,
-          text: tweet.text,
-          name: tweet.user.name,
-          username: "@" + tweet.user.screen_name,
-          liked: tweet.favorited,
-          network: networks.twitter
-      }
-
-      res.render('share.ejs', {
-          post: tweet
-      })
-  }))
+  app.get('/share/:id', isLoggedIn, then(getReply(app, 'share.ejs')))
 
   app.get('/compose', isLoggedIn, (req,res) => {
     res.render('compose.ejs')
@@ -132,7 +87,7 @@ module.exports = (app) => {
 
   app.post('/compose', isLoggedIn, then(compose(app)))
 
-  app.get('/reply/:id', isLoggedIn, then(getReply(app)))
+  app.get('/reply/:id', isLoggedIn, then(getReply(app, 'reply.ejs')))
 
   app.post('/reply/:id', isLoggedIn, then(reply(app)))
 

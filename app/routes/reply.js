@@ -29,7 +29,10 @@ module.exports = (app) => {
 			  in_reply_to_status_id: id
 			})
 		} else if(networkType === 'facebook'){
-			console.log(id, reply)
+			FB.setAccessToken(req.user.facebook.token)
+			let url = '/' + id +'/comments'
+			let response = await new Promise((resolve, reject) => FB.api(url, 'post', {message : reply}, resolve))
+
 		} else {
 			return req.flash('error', 'Invalid networkType') 
 		}

@@ -29,8 +29,6 @@ module.exports = (app) => {
 		  access_token_secret: req.user.twitter.secret
 		})
 
-		// let [tweets] = await twitterClient.promise.get('statuses/home_timeline') 
-
 		let atoken = req.user.facebook.token;
 		let [[tweets], response] = await Promise.all([
 			twitterClient.promise.get('statuses/home_timeline'),
@@ -53,12 +51,6 @@ module.exports = (app) => {
 		  network: networks.twitter
 		}
 		})
-
-
-		// let response = await requestPromise({
-		//     uri: `https://graph.facebook.com/me/home/?access_token=${atoken}&limit=10`,
-		//     resolveWithFullResponse: true
-		// })
 		  
 		let fbFeeds;
 		if(response && response.body){
@@ -73,7 +65,7 @@ module.exports = (app) => {
 		    return {
 		        id: post.id,
 		        image: post.picture,
-		        text: post.description,
+		        text: post.description || post.message,
 		        name: post.from.name,
 		        username: post.name,
 		        liked: liked,

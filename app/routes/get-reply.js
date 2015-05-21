@@ -17,7 +17,7 @@ let networks = {
   }
 }
 
-module.exports = (app) => {
+module.exports = (app, redirectView) => {
 	let twitterConfig = app.config.auth.twitter	
 	return async (req, res) => {
 	    let id = req.params.id
@@ -41,13 +41,13 @@ module.exports = (app) => {
 		        network: networks.twitter
 		    }
 
-		    res.render('reply.ejs', {
+		    res.render(redirectView, {
 		        post: tweet,
 		        networkType : networkType
 		    })
 		} else if (networkType === 'facebook') {
 			console.log(id)
-			FB.setAccessToken(req.user.facebook.token);
+			FB.setAccessToken(req.user.facebook.token)
 			let url = '/' + id 
       		let response = await new Promise((resolve, reject) => FB.api(url, resolve))
       		console.log(response)
@@ -59,7 +59,7 @@ module.exports = (app) => {
       			username: '',
       			network: networks.facebook
       		}
-      		res.render('reply.ejs', {
+      		res.render(redirectView, {
 		        post: post,
 		        networkType : networkType
 		    })

@@ -79,14 +79,7 @@ function configure(config) {
         consumerKey: config.twitter.consumerKey,
         consumerSecret: config.twitter.consumerSecret,
         callbackURL: config.twitter.callbackUrl
-    }, 'twitter')
-
-  useExternalPassportStrategy(GoogleStrategy, {
-        consumerKey: config.google.consumerKey,
-        consumerSecret: config.google.consumerSecret,
-        realm: config.google.realm,
-        returnURL: config.google.returnURL
-    }, 'google')
+    }, 'twitter')  
 
   passport.use('local-login', new LocalStrategy({
     // Use "email" field instead of "username"
